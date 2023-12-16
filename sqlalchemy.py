@@ -1,0 +1,101 @@
+import time
+import sqlalchemy as db
+
+tengine = db.create_engine("sqlite:///nyc_yellow_tiny.db")
+tiny = tengine.connect()
+bengine = db.create_engine("sqlite:///nyc_yellow_big.db")
+big = bengine.connect()
+q1 = db.text('''SELECT "VendorID", count(*) FROM trips GROUP BY 1;''')
+q2 = db.text('''SELECT "passenger_count", avg(total_amount) FROM trips GROUP BY 1;''')
+q3 = db.text('''SELECT "passenger_count", strftime('%Y', "tpep_pickup_datetime"), count(*) FROM trips GROUP BY 1, 2;''')
+q4 = db.text('''SELECT "passenger_count", strftime('%Y', "tpep_pickup_datetime"), round("trip_distance"), count(*) FROM trips GROUP BY 1, 2, 3 ORDER BY 2, 4 desc;''')
+
+print('for tiny data')
+sum1, sum2, sum3, sum4 = 0, 0, 0, 0
+for i in range(10):
+    #q1
+    t0 = time.perf_counter()
+    result1 = tiny.execute(q1)
+    t1 = time.perf_counter()
+    sum1 += (t1 - t0)
+    #q2
+    t0 = time.perf_counter()
+    result2 = tiny.execute(q2)
+    t1 = time.perf_counter()
+    sum2 += (t1 - t0)
+    #q3
+    t0 = time.perf_counter()
+    result3 = tiny.execute(q3)
+    t1 = time.perf_counter()
+    sum3 += (t1 - t0)
+    #q4
+    t0 = time.perf_counter()
+    result4 = tiny.execute(q4)
+    t1 = time.perf_counter()
+    sum4 += (t1 - t0)
+    if i == 9:
+        print("First query")
+        print("Result: ", end='')
+        for r in result1: print(r)
+        print("Average time: ", sum1 / 10)
+        print()
+        print("Second query")
+        print("Result: ", end='')
+        for r in result2: print(r)
+        print("Average time: ", sum2 / 10)
+        print()
+        print("Third query")
+        print("Result: ", end='')
+        for r in result3: print(r)
+        print("Average time: ", sum3 / 10)
+        print()
+        print("Fourth query")
+        print("Result: ", end='')
+        for r in result4: print(r)
+        print("Average time: ", sum4 / 10)
+        print()
+
+print('for big data')
+sum1, sum2, sum3, sum4 = 0, 0, 0, 0
+for i in range(10):
+    #q1
+    t0 = time.perf_counter()
+    result1 = big.execute(q1)
+    t1 = time.perf_counter()
+    sum1 += (t1 - t0)
+    #q2
+    t0 = time.perf_counter()
+    result2 = big.execute(q2)
+    t1 = time.perf_counter()
+    sum2 += (t1 - t0)
+    #q3
+    t0 = time.perf_counter()
+    result3 = big.execute(q3)
+    t1 = time.perf_counter()
+    sum3 += (t1 - t0)
+    #q4
+    t0 = time.perf_counter()
+    result4 = big.execute(q4)
+    t1 = time.perf_counter()
+    sum4 += (t1 - t0)
+    if i == 9:
+        print("First query")
+        print("Result: ", end='')
+        for r in result1: print(r)
+        print("Average time: ", sum1 / 10)
+        print()
+        print("Second query")
+        print("Result: ", end='')
+        for r in result2: print(r)
+        print("Average time: ", sum2 / 10)
+        print()
+        print("Third query")
+        print("Result: ", end='')
+        for r in result3: print(r)
+        print("Average time: ", sum3 / 10)
+        print()
+        print("Fourth query")
+        print("Result: ", end='')
+        for r in result4: print(r)
+        print("Average time: ", sum4 / 10)
+        print()
